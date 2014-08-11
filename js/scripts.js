@@ -181,8 +181,21 @@ function getTraffic() {
 
     })
     .done(function() { console.log('traffic getJSON request succeeded!'); $('.areas-container').fadeIn(); $('.traffic-legend').fadeIn();})
-    .fail(function(jqXHR, textStatus, errorThrown) { console.log('traffic getJSON request failed! ' + textStatus); console.log('traffic getJSON begin another attempt ...'); getTraffic(); })
-    .always(function() { console.log('traffic getJSON request ended!'); });
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        console.log('traffic getJSON request failed ' + textStatus);
+        console.log('traffic getJSON begin another attempt...');
+
+        fail_counter++;
+
+        if (fail_counter < 5) {
+            console.log('traffic getJSON failed attempt #' + fail_counter);
+            getTraffic();
+        } else {
+            console.log('traffic getJSON request failed too many times');
+        }
+        
+    })
+    .always(function() { console.log('traffic getJSON request ended'); });
 }
 
 function getColor(traffic) {
