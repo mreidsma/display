@@ -3,11 +3,15 @@
 $( document ).ready(function() {
 
     $('.areas-container').hide();
-    $('.traffic-legend').hide();
+    $('#area-traffic-legend').hide();
+
+    $('.room-availability-floors').hide();
+    $('#room-traffic-legend').hide();
 
     resetButtons();
     getFloor();
     getTraffic();
+    getRoomAvailability();
 });
 
 $(".atrium-floor-button").click(function() {
@@ -184,16 +188,6 @@ function getTraffic() {
     .fail(function(jqXHR, textStatus, errorThrown) {
         console.log('traffic getJSON request failed ' + textStatus);
         console.log('traffic getJSON begin another attempt...');
-
-        fail_counter++;
-
-        if (fail_counter < 5) {
-            console.log('traffic getJSON failed attempt #' + fail_counter);
-            getTraffic();
-        } else {
-            console.log('traffic getJSON request failed too many times');
-        }
-        
     })
     .always(function() { console.log('traffic getJSON request ended'); });
 }
@@ -212,6 +206,87 @@ function getColor(traffic) {
             return 'red';
         default:
             return 'grey';
+    }
+}
+
+
+function getRoomAvailability() {
+    console.log('getting room availability data... ');
+
+    /*
+    7678 / 003 - Media Prep Room
+    7679 / 004 - Media Prep Room
+    7680 / 005 - Media Prep Room
+    7686 / 133 - Playback
+    7687 / 134 - Presentation Practice
+    7688 / 135 - Presentation Practice
+    7689 / 202 - Conference Style
+    7690 / 203 - Conference Style
+    7801 / 204 - Lounge Style
+    7691 / 205 - Conference Style
+    7692 / 216 - Seminar Room
+    7693 / 302 - Conference Style
+    7694 / 303 - Lounge Style
+    7696 / 305 - Conference Style
+    7698 / 404 - Conference Style
+    7699 / 405 - Conference Style
+    */
+
+    var roomIds = {
+        r003:"7678",
+        r004:"7679",
+        r005:"7680",
+        r133:"7686",
+        r134:"7687",
+        r135:'7688',
+        r202:'7689',
+        r203:'7690',
+        r204:'7801',
+        r205:'7691',
+        r216:'7692',
+        r302:'7693',
+        r303:'7694',
+        r305:'7696',
+        r404:'7698',
+        r405:'7699'
+    };
+
+    console.log(roomIds);
+
+    for (var key in roomIds) {
+        if (roomIds.hasOwnProperty(key)) {
+            getRoomData(roomIds[key]);
+        }
+    }
+
+    $('.room-availability-floors').fadeIn();
+    $('#room-traffic-legend').fadeIn();
+
+    function getRoomData(roomId) {
+        $.ajax({
+        type: "PUT",
+        url: "getRoomAvailability.php?roomId=" + roomId,
+        dataType: "json",
+        success: function(data) {
+            /* handle data here */
+            console.log(data);
+
+            $('#' + roomId).removeClass('grey').addClass("available");
+
+            if (data["Status"] == "reserved") {
+                $('#' + roomId).removeClass('available').addClass(data["Status"]);
+            } else if (data["Status"] == "reserved_soon") {
+                $('#' + roomId).removeClass('available').addClass(data["Status"]);
+            }
+
+        },
+        error: function(xhr, status) {
+            /* handle error here */
+            console.log("ajax failed: " + status);
+
+            $('#' + roomId).removeClass('grey').addClass("available");
+        }
+    });
     }
 }
 
