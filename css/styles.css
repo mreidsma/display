@@ -240,7 +240,7 @@ i {
     padding: 5px;
     margin-top: 10px;
     font-size: 14px;
-    height: 40px;
+    height: 42px;
 }
 .room-container .room-title {
     display: block;
@@ -250,12 +250,13 @@ i {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 18px;
 }
 
 /** TRAFFIC MAP **/
 
 .traffic-map-container {
-	height: 556px;
+	height: 562px;
 	background-color: #fff;
 }
 

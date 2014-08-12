@@ -17,18 +17,32 @@ if (isset($_GET['roomId'])) {
 
         $now = new dateTime();
         $now_format = $now->format('H:i:00');
-        $now = strtotime($now_format);
 
+        $hour_from_now = $now->add(new DateInterval('PT1H'));
+        $hour_from_now = $hour_from_now->format('H:i:00');
+
+        /*
+        echo strtotime($hour_from_now);
+        echo '<br>' . strtotime($timeStart);
+        echo '<br>' . strtotime($timeEnd);
+
+        echo '<br>' . $hour_from_now;
+        echo '<br>' . $timeStart;
+        echo '<br>' . $timeEnd;
+
+        echo '<br>' . strtotime($now_format);
+        echo '<br>' . strtotime($timeStart);
+        echo '<br>' . strtotime($timeEnd);
+        */
 
         // Ignore GVSU API User
-        if ($reservation->GroupName != "GVSU-API User") {
+        //if ($reservation->GroupName != "GVSU-API User") {
 
             //
-            if ($now > strtotime($timeStart) && $now < strtotime($timeEnd)) {
-
+            if (strtotime($now_format) > strtotime($timeStart) && strtotime($now_format) < strtotime($timeEnd)) {
                 $reservations = array(
                     "Room" => (string)$reservation->Room,
-                    "GroupName" => (string)$reservation->GroupName,
+                    "GroupName" => groupName((string)$reservation->GroupName, $timeEnd, $timeStart, $reservation),
                     "TimeStart" => $timeStart,
                     "TimeEnd" => $timeEnd,
                     "Now" => $now_format,
@@ -39,10 +53,11 @@ if (isset($_GET['roomId'])) {
                 echo json_encode($reservations);
                 break;
 
-            } elseif (($now + 3600) > strtotime($timeStart) && $now < strtotime($timeEnd)) {
+            } else if (strtotime($hour_from_now) > strtotime($timeStart) && strtotime($hour_from_now) < strtotime($timeEnd)) {
+
                 $reservations = array(
                     "Room" => (string)$reservation->Room,
-                    "GroupName" => (string)$reservation->GroupName,
+                    "GroupName" => groupName((string)$reservation->GroupName, $timeEnd, $timeStart, $reservation),
                     "TimeStart" => $timeStart,
                     "TimeEnd" => $timeEnd,
                     "Now" => $now_format,
@@ -54,7 +69,17 @@ if (isset($_GET['roomId'])) {
                 break;
             }
 
-        }
+        //}
 
+    }
+}
+
+function groupName($group_name, $timeEnd, $timeStart, $reservation) {
+    if ($group_name == "wall mounted device scheduled") {
+        return "local reservation";
+    } else if ($group_name == "GVSU-API User") {
+        return (string)$reservation->EventName;
+    } else {
+        return $group_name;
     }
 }

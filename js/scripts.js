@@ -279,12 +279,14 @@ function getRoomAvailability() {
                 $('#' + roomId + ' .reserved-by').text(data["GroupName"]);
             } else if (data["Status"] == "reserved_soon") {
                 $('#' + roomId).removeClass('available').addClass(data["Status"]);
+
+                $('#' + roomId + ' .reserved-by').text(data["GroupName"]);
             }
 
         },
         error: function(xhr, status) {
             /* handle error here */
-            console.log("ajax failed: " + status);
+            //console.log("ajax failed: " + status);
 
             $('#' + roomId).removeClass('grey').addClass("available");
         }
