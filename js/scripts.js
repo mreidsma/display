@@ -1,5 +1,4 @@
 
-
 $( document ).ready(function() {
 
     $('.areas-container').hide();
@@ -12,6 +11,9 @@ $( document ).ready(function() {
     getFloor();
     getTraffic();
     getRoomAvailability();
+
+    setInterval('getTraffic();',600000); // every 10 minutes
+    setInterval('getRoomAvailability();',60000); // every minute
 });
 
 $(".atrium-floor-button").click(function() {
@@ -251,8 +253,6 @@ function getRoomAvailability() {
         r405:'7699'
     };
 
-    console.log(roomIds);
-
     for (var key in roomIds) {
         if (roomIds.hasOwnProperty(key)) {
             getRoomData(roomIds[key]);
@@ -264,7 +264,7 @@ function getRoomAvailability() {
 
     function getRoomData(roomId) {
         $.ajax({
-        type: "PUT",
+        type: "GET",
         url: "getRoomAvailability.php?roomId=" + roomId,
         dataType: "json",
         success: function(data) {
@@ -275,6 +275,8 @@ function getRoomAvailability() {
 
             if (data["Status"] == "reserved") {
                 $('#' + roomId).removeClass('available').addClass(data["Status"]);
+
+                $('#' + roomId + ' .reserved-by').text(data["GroupName"]);
             } else if (data["Status"] == "reserved_soon") {
                 $('#' + roomId).removeClass('available').addClass(data["Status"]);
             }
