@@ -76,7 +76,8 @@ if (isset($_GET['roomId'])) {
 
 function groupName($group_name, $timeEnd, $timeStart, $reservation) {
     if ($group_name == "wall mounted device scheduled") {
-        return "local reservation";
+        //return "Local Reservation";
+        return "";
     } else if ($group_name == "GVSU-API User") {
         return (string)$reservation->EventName;
     } else {
